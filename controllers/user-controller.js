@@ -1,5 +1,5 @@
 const { User } = require("../models");
-const { populate } = require("../models/user");
+const { populate } = require("../models/User");
 
 const userController = {
   getAllUsers(req, res) {
@@ -10,7 +10,7 @@ const userController = {
       })
       .select("-__v")
       .sort({ _id: -1 })
-      .then((UserDatadb) => res.json(UserDatadb))
+      .then((dbUserData) => res.json(dbUserData))
       .catch((err) => {
         console.log(err);
         res.status(400).json(err);
@@ -23,12 +23,12 @@ const userController = {
         select: "-__v",
       })
       .select("-__v")
-      .then((UserDatadb) => {
-        if (!UserDatadb) {
-          res.status(404).json({ message: "Invalid User Id" });
+      .then((dbUserData) => {
+        if (!dbUserData) {
+          res.status(404).json({ message: "No user found with this ID" });
           return;
         }
-        res.json(UserDatadb);
+        res.json(dbUserData);
       })
       .catch((err) => {
         console.log(err);
@@ -37,28 +37,28 @@ const userController = {
   },
   createUser({ body }, res) {
     User.create(body)
-      .then((UserDatadb) => res.json(UserDatadb))
+      .then((dbUserData) => res.json(dbUserData))
       .catch((err) => res.status(400).json(err));
   },
   updateUser({ params, body }, res) {
     User.findOneAndUpdate({ _id: params.id }, body, { new: true })
-      .then((UserDatadb) => {
-        if (!UserDatadb) {
-          res.status(404).json({ message: "Invalid User Id" });
+      .then((dbUserData) => {
+        if (!dbUserData) {
+          res.status(404).json({ message: "No user found with this ID" });
           return;
         }
-        res.json(UserDatadb);
+        res.json(dbUserData);
       })
       .catch((err) => res.status(400).json(err));
   },
   deleteUser({ params }, res) {
     User.findOneAndDelete({ _id: params.id })
-      .then((UserDatadb) => {
-        if (!UserDatadb) {
-          res.status(404).json({ message: "Invalid User Id" });
+      .then((dbUserData) => {
+        if (!dbUserData) {
+          res.status(404).json({ message: "no user found with this ID" });
           return;
         }
-        res.json(UserDatadb);
+        res.json(dbUserData);
       })
       .catch((err) => res.status(400).json(err));
   },
@@ -69,7 +69,7 @@ const userController = {
       { $addToSet: { friends: params.friendsId } },
       { new: true }
     )
-      .then((UserDatadb) => res.json(UserDatadb))
+      .then((dbUserData) => res.json(dbUserData))
       .catch((err) => res.status(400).json(err));
   },
 
@@ -79,12 +79,12 @@ const userController = {
       { $pull: { friends: params.friendsId } },
       { new: true }
     )
-      .then((UserDatadb) => {
-        if (!UserDatadb) {
-          res.status(404).json({ message: "Invalid User Id" });
+      .then((dbUserData) => {
+        if (!dbUserData) {
+          res.status(404).json({ message: "no user found with this ID" });
           return;
         }
-        res.json(UserDatadb);
+        res.json(dbUserData);
       })
       .catch((err) => res.status(400).json(err));
   },
